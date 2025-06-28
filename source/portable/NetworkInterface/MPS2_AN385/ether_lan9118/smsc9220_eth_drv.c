@@ -1207,12 +1207,13 @@ uint32_t smsc9220_peek_next_packet_size( const struct
                                          smsc9220_eth_dev_t * dev )
 {
     uint32_t packet_size = 0;
-    struct smsc9220_eth_reg_map_t * register_map =
-        ( struct smsc9220_eth_reg_map_t * ) dev->cfg->base;
-    volatile uint32_t rx_status_from_peek = 0;
 
     if( smsc9220_get_rxfifo_data_used_space( dev ) )
     {
+        struct smsc9220_eth_reg_map_t * register_map =
+            ( struct smsc9220_eth_reg_map_t * ) dev->cfg->base;
+        volatile uint32_t rx_status_from_peek = 0;
+
         rx_status_from_peek = register_map->rx_status_peek;
         /* Warning: try reading from port as peek is often zero. */
         rx_status_from_peek = register_map->rx_status_port;
@@ -1220,10 +1221,6 @@ uint32_t smsc9220_peek_next_packet_size( const struct
         packet_size = GET_BIT_FIELD( rx_status_from_peek,
                                      RX_FIFO_STATUS_PKT_LENGTH_MASK,
                                      RX_FIFO_STATUS_PKT_LENGTH_POS );
-    }
-    else
-    {
-        rx_status_from_peek = ( uint32_t ) -1;
     }
 
     return packet_size;
