@@ -1221,10 +1221,6 @@ uint32_t smsc9220_peek_next_packet_size( const struct
                                      RX_FIFO_STATUS_PKT_LENGTH_MASK,
                                      RX_FIFO_STATUS_PKT_LENGTH_POS );
     }
-    else
-    {
-        rx_status_from_peek = ( uint32_t ) -1;
-    }
 
     return packet_size;
 }
