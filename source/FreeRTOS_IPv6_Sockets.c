@@ -305,7 +305,7 @@ static BaseType_t prv_ntop6_write_zeros( char * pcDestination,
         if( ( pxSet->xIndex + pxSet->xZeroLength ) == xShortCount )
         {
             /* Reached the last index, write a second ":". */
-            if( pxSet->uxTargetIndex <= ( uxSize - 1U ) )
+            if( pxSet->uxTargetIndex < ( uxSize - 1U ) )
             {
                 pcDestination[ pxSet->uxTargetIndex ] = ':';
                 pxSet->uxTargetIndex++;
@@ -365,7 +365,7 @@ static BaseType_t prv_ntop6_write_short( char * pcDestination,
     if( xReturn == pdPASS )
     {
         /* If there is enough space to write a short. */
-        if( pxSet->uxTargetIndex <= ( uxSize - uxBytesPerShortValue ) )
+        if( ( pxSet->uxTargetIndex + uxBytesPerShortValue ) < uxSize )
         {
             /* Write hex value of short. at most 4 + 1 bytes. */
             uxLength = uxHexPrintShort( &( pcDestination[ pxSet->uxTargetIndex ] ),
@@ -391,7 +391,11 @@ static BaseType_t prv_ntop6_write_short( char * pcDestination,
  * @param[in] pvSource The binary address, 16 bytes long..
  * @param[out] pcDestination The human-readable ( hexadecimal ) notation of the
  *                            address.
- * @param[in] uxSize The size of pvDestination. A value of 40 is recommended.
+ * @param[in] uxSize The size of pcDestination. MUST be at least
+ *                   ipSIZE_OF_IPv6_ADDR_STRLEN (40) to hold the longest
+ *                   possible IPv6 text form (39 characters) plus its NUL
+ *                   terminator. If uxSize is smaller, the function may return
+ *                   NULL for inputs that produce maximum-length output.
  *
  * @return pdPASS if the translation was successful or else pdFAIL.
  */

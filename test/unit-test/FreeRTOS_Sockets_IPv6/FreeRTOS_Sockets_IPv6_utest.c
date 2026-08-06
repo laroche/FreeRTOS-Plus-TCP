@@ -870,6 +870,28 @@ void test_FreeRTOS_inet_ntop6_LesserBufferSizeNonZero( void )
 }
 
 /**
+ * @brief Test that room for the NUL terminator is reserved within uxSize.
+ *
+ * The longest IPv6 text form is 39 characters, so a 39-byte destination cannot
+ * also hold the terminator. The conversion must fail rather than write at
+ * index 39.
+ */
+void test_FreeRTOS_inet_ntop6_MaxAddressExactSize( void )
+{
+    const char * pcReturn;
+    IPv6_Address_t xMaxAddress;
+    char cDestination[ NTOP_CHAR_BUFFER_SIZE ];
+
+    ( void ) memset( xMaxAddress.ucBytes, 0xFF, ipSIZE_OF_IPv6_ADDRESS );
+    ( void ) memset( cDestination, 0xAA, sizeof( cDestination ) );
+
+    pcReturn = FreeRTOS_inet_ntop6( xMaxAddress.ucBytes, cDestination, NTOP_CHAR_BUFFER_LAST_INDEX );
+
+    TEST_ASSERT_EQUAL( NULL, pcReturn );
+    TEST_ASSERT_EQUAL_UINT8( 0xAA, ( uint8_t ) cDestination[ NTOP_CHAR_BUFFER_LAST_INDEX ] );
+}
+
+/**
  * @brief Test for the case when the incoming character is not a colon.
  */
 void test_prv_inet_pton6_add_nibble_NotColon( void )
